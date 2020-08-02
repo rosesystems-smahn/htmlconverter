@@ -23,7 +23,7 @@
     #targetEditor {
         margin: 0;
         position: absolute;
-        top: 0;
+        top: 10%;
         bottom: 0;
         left: 0;
         right: 0;
@@ -32,12 +32,14 @@
 	#originEditor{
 		margin: 0;
 		position:absolute;
-		top: 0;
+		top: 10%;
 		bottom: 0;
 		left: 0;
 		right:0;
 	}
   </style>
+
+  <script src="vendor/download/download.js"></script>
   
 </head>
 
@@ -71,6 +73,13 @@
       <div class="col-lg-5 text-center">
 		<!-- <textarea class="form-control html" id="originTxt" rows="30"></textarea> -->
 
+		<div class="input-group input-group-sm mb-3">
+			<div class="input-group-prepend">
+			  <span class="input-group-text" id="inputGroup-sizing-sm">파일명</span>
+			</div>
+			<input id="originFileNameInput" type="text" class="form-control" readonly="readonly">
+		  </div>		
+
 		<div class="editor-style" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);">
 			<pre id="originEditor"></pre>
 			
@@ -84,13 +93,22 @@
 
       </div>
 	  
-      <div class="col-lg-2 text-center">
+      <div class="col-lg-1 text-center">
 		
-		<button class="btn btn-primary mb-2" type="submit" id="convertBtn">변환 >>> </button>
+		<button class="btn btn-primary mb-2" type="submit" id="convertBtn">변환></button>
       </div>	  
 	  
       <div class="col-lg-5 text-center">
 		<!-- <textarea class="form-control" id="targetTxt" rows="30"></textarea> -->
+		<div class="input-group input-group-sm mb-3">
+			<div class="input-group-prepend">
+			  <span class="input-group-text" id="inputGroup-sizing-sm">파일명</span>
+			</div>
+			<input id="targetFileNameInput" type="text" class="form-control" >
+			<div class="input-group-append">
+				<button class="btn btn-outline-secondary" type="button" id="downloadBtn">다운로드</button>
+			  </div>			
+		  </div>				
 
 		<div class="editor-style">
 			<pre id="targetEditor"></pre>
@@ -114,6 +132,18 @@
 
   <script>
 
+function convertGlobal(){
+	// let origin_txt = $('#originTxt').val();
+	let origin_txt = originEditor.getValue();
+
+	targetEditor.setValue('');
+
+	// replaced target regex
+	let target_txt = regexReplace(origin_txt);
+
+	targetEditor.setValue(target_txt);
+}
+
 
 function dropHandler(ev) {
   // console.log('File(s) dropped');
@@ -129,12 +159,16 @@ function dropHandler(ev) {
         var file = ev.dataTransfer.items[i].getAsFile();
 		console.log('... file[' + i + '].name = ' + file.name);
 
+		$("#originFileNameInput").val(file.name);
+		$("#targetFileNameInput").val(file.name);
+
 		let reader = new FileReader();
 		reader.readAsText(file);
 		let setStr = "";
 		reader.onload = function(){
 			setStr = reader.result;
 			originEditor.setValue(setStr);
+			convertGlobal();
 		}
 
 		
@@ -339,6 +373,20 @@ function dragOverHandler(ev) {
 			if(key.keyCode == 13 && key.shiftKey){
 				convertFunc();
 			}
+		});
+
+		$('#downloadBtn').on('click', function(){
+
+			var fileName = $("#targetFileNameInput").val();
+
+			var convertedText = targetEditor.getValue();
+
+			var downTxt = convertedText.trim();
+			if(downTxt){
+				if(fileName != '' && fileName != null)
+				download(convertedText, fileName, "text/plain");
+			}
+
 		});
 		
 	});
