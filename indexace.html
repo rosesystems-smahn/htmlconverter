@@ -203,7 +203,7 @@ function dragOverHandler(ev) {
 			  , "replaceStr" : ""
 		  }
 		 ,{
-			   "pattern" : "\<meta .*\>" 
+			   "pattern" : "\<meta.*\>" 
 			  , "replaceStr" : ""
 		  }
 //		  ,{
@@ -222,10 +222,10 @@ function dragOverHandler(ev) {
 			   "pattern" : "style\\s*=\\s*\"[^\"]*\"" 
 			  , "replaceStr" : ""
 		  }
-		  ,{
-			   "pattern" : "rows=\"[^\"]*\"" 
-			  , "replaceStr" : ""
-		  }
+		//   ,{
+		// 	   "pattern" : "rows=\"[^\"]*\"" 
+		// 	  , "replaceStr" : ""
+		//   }
 		  ,{
 			   "pattern" : "(class=\"padL5\"|class=\"input01\")" 
 			  , "replaceStr" : ""
@@ -235,23 +235,23 @@ function dragOverHandler(ev) {
 //			  , "replaceStr" : ""
 //		  }
 		  ,{
-			   "pattern" : "\<tr" 
+			   "pattern" : "\\s*<\\s*tr" 
 			  , "replaceStr" : "<tr class=\"aprvl-table-row\" "
 		  }
 		  ,{
-			   "pattern" : "\<td" 
+			   "pattern" : "\\s*<\\s*td" 
 			  , "replaceStr" : "<td class=\"aprvl-table-data\" "
 		  }		  
 		  ,{
-			   "pattern" : "\<table" 
+			   "pattern" : "\\s*<\\s*table" 
 			  , "replaceStr" : "<table class=\"aprvl-table-basic\" "
 		  }
 		  ,{
-			   "pattern" : "\<TABLE.*" 
+			   "pattern" : "\\s*<\\s*TABLE.*" 
 			  , "replaceStr" : "<table class=\"aprvl-table-basic\">"
 		  }		  
 		  ,{
-			   "pattern" : "\<table.*" 
+			   "pattern" : "\\s*<\\s*table.*" 
 			  , "replaceStr" : "<table class=\"aprvl-table-basic\">"
 		  }		  		  
 
@@ -263,65 +263,65 @@ function dragOverHandler(ev) {
 			   "pattern" : "\\<%=logo%\\>" 
 			  , "replaceStr" : "${form_logo_qcells}"
 		  }	
-		  ,{ // 달력
+		  ,{ // 달력 치환
 			   "pattern" : "src\\s*=\\s*\".*/input_calendar.*gif\"" 
 			  , "replaceStr" : "src=\"/neo/js/ewt/ext/formEditor/images/input_calendar.gif\""
 		  }
-		  ,{ // 달력
+		  ,{ // 달력 치환
 			   "pattern" : "src\\s*=\\s*\".*/input_calendar\\.gif\"" 
 			  , "replaceStr" : "src=\"/neo/js/ewt/ext/formEditor/images/input_calendar.gif\""
 		  }
-		  ,{ // 사원찾기
+		  ,{ // 사원찾기 치환
 			   "pattern" : "src\\s*=\\s*\".*/user_obj\\.gif\"" 
 			  , "replaceStr" : "src=\"/neo/js/ewt/ext/formEditor/images/user_obj.gif\""
 		  }	
-		  ,{ // 사원찾기
+		  ,{ // 사원찾기 치환
 			   "pattern" : "src\\s*=\\s*\".*/user_obj.*gif\"" 
 			  , "replaceStr" : "src=\"/neo/js/ewt/ext/formEditor/images/user_obj.gif\""
 		  }	
-		  ,{ // 부서찾기
+		  ,{ // 부서찾기 치환
 			   "pattern" : "src\\s*=\\s*\".*/group_obj.*gif\"" 
 			  , "replaceStr" : "src=\"/neo/js/ewt/ext/formEditor/images/group_obj.gif\""
 		  }	
-		  ,{ // 부서찾기
+		  ,{ // 부서찾기 치환
 			   "pattern" : "src\\s*=\\s*\".*/group_obj\\.gif\"" 
 			  , "replaceStr" : "src=\"/neo/js/ewt/ext/formEditor/images/group_obj.gif\""
 		  }	
-		  ,{ // 사원 + 부서 찾기
+		  ,{ // 사원 + 부서 찾기 치환
 			   "pattern" : "src\\s*=\\s*\".*/udt.*gif\"" 
 			  , "replaceStr" : "src=\"/neo/js/ewt/ext/formEditor/images/udt.gif\""
 		  }	
-		  ,{ // 사원 + 부서 찾기
+		  ,{ // 사원 + 부서 찾기 치환
 			   "pattern" : "src\\s*=\\s*\".*/udt\\.gif\"" 
 			  , "replaceStr" : "src=\"/neo/js/ewt/ext/formEditor/images/udt.gif\""
 		  }	
-		  ,{ // 관련 문서
+		  ,{ // 관련 문서 치환
 			   "pattern" : "src\\s*=\\s*\".*/i-file-none.*gif\"" 
 			  , "replaceStr" : "src=\"/neo/js/ewt/ext/formEditor/images/i-file-none.gif\""
 		  }		
-		  ,{ // 관련 문서
+		  ,{ // 관련 문서 치환
 			   "pattern" : "src\\s*=\\s*\".*/i-file-none\\.gif\"" 
 			  , "replaceStr" : "src=\"/neo/js/ewt/ext/formEditor/images/i-file-none.gif\""
 		  }		
-		  ,{ // 편집기
+		  ,{ // 편집기 치환
 			   "pattern" : "src\\s*=\\s*\".*/input_html\\.gif\"" 
 			  , "replaceStr" : "src=\"/neo/js/ewt/ext/formEditor/images/input_html.gif\"" 
 		  }		
-		  ,{ // 편집기
+		  ,{ // 편집기 치환
 			   "pattern" : "src\\s*=\\s*\".*/input_html\\.gif\"" 
 			  , "replaceStr" : "src=\"/neo/js/ewt/ext/formEditor/images/input_html.gif\"" 
 		  }		
-		  ,{ // 조직도 팝업
+		  ,{ // 조직도 팝업 치환
 			   "pattern" : "src\\s*=\\s*\".*/btn_group.*gif\"" 
 			  , "replaceStr" : "src=\"/neo/img/neo/theme/btn/btn_group.gif\""
 		  }		
-		  ,{ // 조직도 팝업
+		  ,{ // 조직도 팝업 치환
 			   "pattern" : "src\\s*=\\s*\".*/btn_group\.gif\"" 
 			  , "replaceStr" : "src=\"/neo/img/neo/theme/btn/btn_group.gif\""
 		  }
-		  ,{ // th class 적용
-			   "pattern" : "\<td\\s*(class=\"aprvl-table-data\")(.*)bgcolor=\"\\S+\"(.*)" 
-			  , "replaceStr" : "\<td class=\"aprvl-table-head\" $2 $3"
+		  ,{ // th class 적용 치환
+			   "pattern" : "\\<td\\s*(class=\"aprvl-table-data\")(.*)bgcolor=\"\\S+\"(.*)" 
+			  , "replaceStr" : "<td class=\"aprvl-table-head\" $2 $3"
 		  }
 		  ,{
 			   "pattern" : "write\\s+&&"
