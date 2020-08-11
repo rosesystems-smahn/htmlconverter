@@ -1,0 +1,275 @@
+<%
+	request.setAttribute("Applicant_SETDRAFTER","Y");
+%>
+<html>
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<style type="text/css">body,td,input,textarea,select { font-size: 9pt; }</style>
+
+<script type="text/javascript">
+
+$().ready(function() {
+	
+	onTypeChange();
+});
+
+
+function onTypeChange() {
+	var type = $('input:radio[name=type]:checked').val();
+	if(type==5) {
+		$('.other').show();
+	} else {
+		$('.other').hide();
+	}
+}
+
+function IsSpace(obj, type, msg) {
+	if($.trim($(obj).val()) == '') {
+		alert('字段“'+ msg +'”不能为空！');
+		if(type == 'input') {			//input type
+			$(obj).select();
+		}
+		$(obj).focus();
+		return true;
+	}
+}//end of function 
+<!-- 表单是否为空验证结束 -->
+
+
+function isDate(dateString){
+  
+  if(dateString.trim()=="")return true;
+  //年月日正则表达式
+  var r=dateString.match(/^(\d{4})(-)(\d{2})\2(\d{2})$/); 
+        if(r==null){
+   alert("请输入格式正确的日期\n\r日期格式：yyyy-mm-dd\n\r例    如：2008-08-08\n\r");
+   return false;
+  }
+        var d=new Date(r[1],r[3]-1,r[4]);   
+  var num = (d.getFullYear()==r[1]&&(d.getMonth()+1)==r[3]&&d.getDate()==r[4]);
+  if(num==0){
+   alert("请输入格式正确的日期\n\r日期格式：yyyy-mm-dd\n\r例    如：2008-08-08\n\r");
+  }
+  return (num!=0);
+  
+}
+
+
+<!-- 表单验证 -->
+function valid_check() {
+	if(IsSpace($('input[name="bodyDocTitle"]'),'input', '主题')) return false;
+	if(IsSpace($('input[name="Applicant"]'), 'input', '申请人')) return false;
+	if(IsSpace($('input[name="Date"]'), 'input', '申请日期')) return false;
+	//if(IsSpace($('input[name="Department"]'),'input', '申请部门')) return false;
+	if(IsSpace($('input[name="COMPANY_CODE"]'), 'input', '公司代码')) return false;
+	if(IsSpace($('input[name="customerName"]'),'input', '客户名称')) return false;
+	
+	
+	var type = $('input:radio[name=type]:checked').val();
+	if(!type) {
+		alert('请选择保函类型！');
+		 $('input:radio[name=type]')[0].focus();
+		return false;
+	} else if(type==5) {
+		if(IsSpace($('input[name="other"]'),'input', '其他类型')) return false;
+	}
+	
+	if(IsSpace($('input[name="invalidDate"]'), 'input', '失效日期')) 
+		return false
+    else{
+    if(!isDate($('input[name="invalidDate"]').val())) {
+			$('input[name="invalidDate"]').focus();			
+			return false;
+		}
+	}
+	
+	if(IsSpace($('input[name="currency"]'),'input', '币种')) return false;
+	if(IsSpace($('input[name="amount"]'),'input', '金额')) return false;
+
+	
+		
+	return true;
+}
+<!-- 表单验证结束 -->
+
+	function currencyComma(obj){
+		comma(obj,2);			
+	}
+	
+	function searchCompanyCode(tagId){ 
+			    var inputDiv = $(".input_" + tagId);
+			    var imgDiv = $(".img_" + tagId);
+		
+			    $(imgDiv).click(function(event){
+			        $objTr = $(this).closest("tr");
+			        // 이미지 클릭시 바로 팝업을 띄운다.
+			        // isGroupYn = "N" 은 왼쪽 tree를 안띄우는 옵션
+			        $.modal({
+			            url:"/neo/modules/approval/sta/staSelectMain.mvc",
+			            title:"기준데이타 선택",
+			            param: {"folderId": "2413" , "isGroupYn" : "N"},
+			            width: 800,
+			            height: 380,
+			            scroll: "no",
+			            onClose: function (jsonObj) {
+			                if(jsonObj != null ){   
+			                              
+			                    // hidden 에 data 셋팅
+			                    $("input[name=COMPANY_CODE]").val(jsonObj.COMPANY_CODE);    
+			                    // 실제 화면에 보여지는 data 셋팅
+			                    $(".input_COMPANY_CODE").html(jsonObj.COMPANY_CODE);
+			                 
+			                }
+			            }
+			        });
+			        //$objTr.find(".input_" + tagId).html("aaa") ;
+			    });
+			}
+	
+	
+//-->
+</script>
+
+
+<!-- 금액입력관련 및 콤마, 소숫점, 입력금액 중국어표현-->
+<script type="text/javascript" src="/neo/js/solarone/solarUtil.js"></script>
+
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="purple" alink="red">
+<table style="margin-top:2pt; margin-right:0pt; margin-bottom:0pt;" cellpadding="0" cellspacing="0" bordercolordark="white" width="763">
+    <tr>
+        <td width="322" height="27">
+            <p align="left" style="margin-top:0pt; margin-right:0pt; margin-bottom:0pt;"><%=logo%></p>
+        </td>
+         <td width="441" height="27">
+            <p align="left" style="margin-top:0pt; margin-right:0pt; margin-bottom:0pt;">
+            <p align="left" style="margin-top:0pt; margin-right:0pt; margin-bottom:0pt;"><b><span style="font-size:14pt;">开通保函申请表</span></b></p>
+            <p align="left" style="margin-top:0pt; margin-right:0pt; margin-bottom:0pt;"><b><span style="font-size:14pt;">Bank 
+            Guarantee Application</span></b></p>
+        </td>
+    </tr>
+    <tr>
+        <td width="322" height="19">
+            <p align="left" style="margin-top:0pt; margin-right:0pt; margin-bottom:0pt;">&nbsp;</p>
+        </td>
+        <td width="441" height="19">
+            <p align="right" style="margin-top:0pt; margin-right:0pt; margin-bottom:0pt;"><b>单号/NO：</b><input type="text" name="documentNo" value="documentNo"></p>
+        </td>
+       
+    </tr>
+</table>
+<table style="margin-top:0pt; margin-right:0pt; margin-bottom:0pt;" border="1" cellpadding="1" cellspacing="0" width="765" bordercolor="#95B4CF" bordercolordark="white">
+    <tr>
+        <td width="125" bgcolor="#F4F4F4" height="30">
+            <p align="left" style="margin-top:0pt; margin-right:0pt; margin-bottom:0pt;"><b>&nbsp;主 
+            题</b></p>
+            <p align="left" style="margin-top:0pt; margin-right:0pt; margin-bottom:0pt;"><b>&nbsp;Theme</b></p>
+        </td>
+        <td width="630" colspan="3" class="padL5">
+<input type="text" name="bodyDocTitle" value="docTitle" class="input01" style="width:98%;">        </td>
+    </tr>
+    <tr>
+        <td width="125" bgcolor="#F4F4F4" height="30">
+            <p align="left" style="margin-top:0pt; margin-right:0pt; margin-bottom:0pt;"><b>&nbsp;申请人</b></p>
+            <p align="left" style="margin-top:0pt; margin-right:0pt; margin-bottom:0pt;"><b>&nbsp;Applicant</b></p>
+        </td>
+        <td width="237" class="padL5">
+            <img src="file:///C|/Users/smahn/AppData/Local/Temp/NamoWec/00000002/MIME2/user_obj.gif" align="bottom" width="16" height="16" border="0" alt='tag{"tagType": "orgUser", "name": "Applicant", "titleHead": "Organition", "singleSelectYN": "Y", "callback": ""}'>
+        </td>
+        <td width="128" bgcolor="#F4F4F4">
+            <p align="left" style="margin-top:0pt; margin-right:0pt; margin-bottom:0pt;"><b>&nbsp;申请日期</b></p>
+            <p align="left" style="margin-top:0pt; margin-right:0pt; margin-bottom:0pt;"><b>&nbsp;Date</b></p>
+        </td>
+        <td width="257" class="padL5">
+            <p align="left" style="margin-top:0pt; margin-right:0pt; margin-bottom:0pt;"><img src="file:///C|/Users/smahn/AppData/Local/Temp/NamoWec/00000002/MIME2/input_calendar[0]..gif" align="bottom" width="16" height="15" border="0" alt='tag{"tagType": "calendar", "name": "Date", "value": "sysdate", "viewFormat": "yyyy-MM-dd"}'>        </td>
+    </tr>
+	<tr>
+        <td width="125" bgcolor="#F4F4F4" height="30">
+            <p align="left" style="margin-top:0pt; margin-right:0pt; margin-bottom:0pt;"><b>&nbsp;公司代码</b></p>
+            <p align="left" style="margin-top:0pt; margin-right:0pt; margin-bottom:0pt;"><b>&nbsp;Company 
+            Code</b></p>
+        </td>
+        <td width="237" class="padL5">
+            <input type="text" class="input01" style="border-bottom : #bdb6bd 1px solid; border-left : #bdb6bd 1px solid; background-color : #ffffff;border-right : #bdb6bd 1px solid; HEIGHT: 19px;width:92%; color:#666666; border-top : #bdb6bd 1px solid;overflow: hidden;" name="COMPANY_CODE" searchFn="searchCompanyCode('COMPANY_CODE')" size="20">
+        </td>
+        <td width="128" bgcolor="#F4F4F4">
+            <p align="left" style="margin-top:0pt; margin-right:0pt; margin-bottom:0pt;"><b>&nbsp;客户名称</b></p>
+            <p align="left" style="margin-top:0pt; margin-right:0pt; margin-bottom:0pt;"><b>&nbsp;Customer 
+            Name</b></p>
+        </td>
+        <td width="257" class="padL5">
+            <p align="left" style="margin-top:0pt; margin-right:0pt; margin-bottom:0pt;"><input type="text" name="customerName" size="12" class="input01" style="width: 95%"></p>
+        </td>
+    </tr>
+    <tr>
+        <td width="125" bgcolor="#F4F4F4" height="30">
+            <p align="left" style="margin-top:0pt; margin-right:0pt; margin-bottom:0pt;"><b>&nbsp;保函类型</b></p>
+            <p align="left" style="margin-top:0pt; margin-right:0pt; margin-bottom:0pt;"><b>&nbsp;Type</b></p>
+        </td>
+        <td width="630" class="padL5" colspan="3">
+            <p align="left" style="margin-top:0pt; margin-right:0pt; margin-bottom:0pt;"><input type="radio" name="type" value="1" onclick="onTypeChange();">履约保函/Performance 
+            Guarantee 
+            <input type="radio" name="type" value="2" onclick="onTypeChange();">投标保函/TENDER&nbsp;Guarantee <input type="radio" name="type" value="3" onclick="onTypeChange();">质量保函/Warranty 
+            Guarantee<br />
+            <input type="radio" name="type" value="4" onclick="onTypeChange();">预付款保函/Advance 
+            Guarantee <input type="radio" name="type" value="5" onclick="onTypeChange();">其他/Others</p>
+			<p class="other" align="left" style="margin-top:3pt; margin-right:0pt; margin-bottom:3pt;">其他说明：<input type="text" name="other" size="12" class="input01" style="width: 98%"></p>
+            
+		</td>
+    </tr>
+    <tr>
+        <td width="125" bgcolor="#F4F4F4" height="30">
+            <p align="left" style="margin-top:0pt; margin-right:0pt; margin-bottom:0pt;"><b>&nbsp;保函失效日期</b></p>
+            <p align="left" style="margin-top:0pt; margin-right:0pt; margin-bottom:0pt;"><b>&nbsp;Expiry 
+            Date</b></p>
+        </td>
+        <td width="630" class="padL5" colspan="3">
+            <p align="left" style="margin-top:0pt; margin-right:0pt; margin-bottom:0pt;"><img src="file:///C|/Users/smahn/AppData/Local/Temp/NamoWec/00000002/MIME2/input_calendar.gif" align="bottom" width="16" height="15" border="0" alt='tag{"tagType": "calendar", "name": "invalidDate", "value": "", "viewFormat": "yyyy-MM-dd"}'></p>
+		</td>
+    </tr>
+    <tr>
+        <td width="125" bgcolor="#F4F4F4" height="30">
+            <p align="left" style="margin-top:0pt; margin-right:0pt; margin-bottom:0pt;"><b>&nbsp;币种</b></p>
+            <p align="left" style="margin-top:0pt; margin-right:0pt; margin-bottom:0pt;"><b>&nbsp;Currency</b></p>
+        </td>
+        <td width="237" class="padL5">
+            <p align="left" style="margin-top:0pt; margin-right:0pt; margin-bottom:0pt;"><input type="text" name="currency" size="12" class="input01" style="width: 95%"></p>
+		</td>
+        <td width="128" class="padL5" bgcolor="#F4F4F4">
+            <p align="left" style="margin-top:0pt; margin-right:0pt; margin-bottom:0pt;">&nbsp;<b>金额</b></p>
+            <p align="left" style="margin-top:0pt; margin-right:0pt; margin-bottom:0pt;"><b>&nbsp;Amount</b></p>
+		</td>
+        <td width="257" class="padL5">
+            <p align="left" style="margin-top:0pt; margin-right:0pt; margin-bottom:0pt;"><input type="text" 
+  			id="amount"
+   			name="amount"
+    		onkeypress="checkValue(this);" 
+    		onkeyup="checkValue(this);comma(this,2);" 
+    		onblur= "checkValue(this);comma(this,2);"
+    		style='IME-MODE: disabled; text-align: right; WIDTH: 95%;' class=input01 size="10"></p>
+		</td>
+    </tr>
+    <tr>
+        <td width="125" bgcolor="#F4F4F4" height="30">
+            <p align="left" style="margin-top:0pt; margin-right:0pt; margin-bottom:0pt;"><b>&nbsp;备注</b></p>
+            <p align="left" style="margin-top:0pt; margin-right:0pt; margin-bottom:0pt;"><b>&nbsp;Remark</b></p>
+        </td>
+        <td width="630" class="padL5" colspan="3">
+            <textarea name="note" rows="3" class="input01" style="width: 98%; height: 50px;"></textarea>		</td>
+    </tr>
+    <tr>
+        <td width="125" bgcolor="#F4F4F4" height="30">
+            <p align="left" style="margin-top:0pt; margin-right:0pt; margin-bottom:0pt;"><b>&nbsp;内容概述</b></p>
+            <p align="left" style="margin-top:0pt; margin-right:0pt; margin-bottom:0pt;"><b>&nbsp;Details</b></p>
+        </td>
+        <td width="630" class="padL5" colspan="3">
+            <p align="left" style="margin-top:0pt; margin-right:0pt; margin-bottom:0pt;"><img src="file:///C|/Users/smahn/AppData/Local/Temp/NamoWec/00000002/MIME2/input_html.gif" align="bottom" width="498" height="32" border="0" alt='tag{"tagType": "activeSquare", "name": "description", "width": "600", "height": "300"}'></p>
+		</td>
+    </tr>
+</table>
+
+</body>
+
+</html>
