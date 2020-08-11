@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Converter</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  
+  <style type="text/css" media="screen">
+    .editor-style {
+        overflow: hidden;
+		width: 200px;
+		height: 800px;
+    }
+
+    #targetEditor {
+        margin: 0;
+        position: absolute;
+        top: 10%;
+        bottom: 0;
+        left: 0;
+        right: 0;
+	}
+	
+	#originEditor{
+		margin: 0;
+		position:absolute;
+		top: 10%;
+		bottom: 0;
+		left: 0;
+		right:0;
+	}
+  </style>
+
+  <script src="vendor/download/download.js"></script>
+  
+</head>
+
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
+    <div class="container">
+      <a class="navbar-brand" href="#">Converter</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarResponsive">
+      </div>
+    </div>
+  </nav>
+
+  <!-- Page Content -->
+  <div class="container-fluid">
+	<div class="row">
+		<div class="col-lg-12">
+			<table class="table table-bordered dataTable">
+				<tbody>
+					
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+    <div class="row">
+      <div class="col-lg-5 text-center">
+		<!-- <textarea class="form-control html" id="originTxt" rows="30"></textarea> -->
+
+		<div class="input-group input-group-sm mb-3">
+			<div class="input-group-prepend">
+			  <span class="input-group-text" id="inputGroup-sizing-sm">파일명</span>
+			</div>
+			<input id="originFileNameInput" type="text" class="form-control" readonly="readonly">
+		  </div>		
+
+		<div class="editor-style" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);">
+			<pre id="originEditor"></pre>
+			
+			<script src="src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+			<script>
+				var originEditor = ace.edit("originEditor");
+				originEditor.setTheme("ace/theme/chrome");
+				originEditor.session.setMode("ace/mode/html");
+			</script>
+		</div>
+
+      </div>
+	  
+      <div class="col-lg-1 text-center">
+		
+		<button class="btn btn-primary mb-2" type="submit" id="convertBtn">변환></button>
+      </div>	  
+	  
+      <div class="col-lg-5 text-center">
+		<!-- <textarea class="form-control" id="targetTxt" rows="30"></textarea> -->
+		<div class="input-group input-group-sm mb-3">
+			<div class="input-group-prepend">
+			  <span class="input-group-text" id="inputGroup-sizing-sm">파일명</span>
+			</div>
+			<input id="targetFileNameInput" type="text" class="form-control" >
+			<div class="input-group-append">
+				<button class="btn btn-outline-secondary" type="button" id="downloadBtn">다운로드</button>
+			  </div>			
+		  </div>				
+
+		<div class="editor-style">
+			<pre id="targetEditor"></pre>
+			
+			<script src="src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+			<script>
+				var targetEditor = ace.edit("targetEditor");
+				targetEditor.setTheme("ace/theme/chrome");
+				targetEditor.session.setMode("ace/mode/html");
+			</script>
+		</div>
+
+      </div>	  
+	  
+    </div>
+  </div>
+
+  <!-- Bootstrap core JavaScript -->
+  <script src="vendor/jquery/jquery.slim.min.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+
+function convertGlobal(){
+	// let origin_txt = $('#originTxt').val();
+	let origin_txt = originEditor.getValue();
+
+	targetEditor.setValue('');
+
+	// replaced target regex
+	let target_txt = regexReplace(origin_txt);
+
+	targetEditor.setValue(target_txt);
+}
+
+
+function dropHandler(ev) {
+  // console.log('File(s) dropped');
+
+  // Prevent default behavior (Prevent file from being opened)
+  ev.preventDefault();
+
+  if (ev.dataTransfer.items) {
+    // Use DataTransferItemList interface to access the file(s)
+    for (var i = 0; i < ev.dataTransfer.items.length; i++) {
+      // If dropped items aren't files, reject them
+      if (ev.dataTransfer.items[i].kind === 'file') {
+        var file = ev.dataTransfer.items[i].getAsFile();
+		console.log('... file[' + i + '].name = ' + file.name);
+
+		$("#originFileNameInput").val(file.name);
+		$("#targetFileNameInput").val(file.name);
+
+		let reader = new FileReader();
+		reader.readAsText(file);
+		let setStr = "";
+		reader.onload = function(){
+			setStr = reader.result;
+			originEditor.setValue(setStr);
+			convertGlobal();
+		}
+
+		
+
+		ev.preventDefault();
+      }
+    }
+  } else {
+    // Use DataTransfer interface to access the file(s)
+    //for (var i = 0; i < ev.dataTransfer.files.length; i++) {
+    // console.log('... file[' + i + '].name = ' + ev.dataTransfer.files[i].name);
+    //}
+  }
+}
+
+function dragOverHandler(ev) {
+  // console.log('File(s) in drop zone'); 
+
+  // Prevent default behavior (Prevent file from being opened)
+  ev.preventDefault();
+}
+
+
+	// regex pattern array
+	var regexPattern = [
+		  { // html, head 태그 제거 정규식
+			   "pattern" : "(\<html\>|\<\/html\>|\<head\>|\<\/head\>|\<body\>|\<\/body\>)" 
+			  , "replaceStr" : ""
+		  }
+		 ,{ // body 태그 제거 정규식
+			   "pattern" : "\<body.*\>" 
+			  , "replaceStr" : ""
+		  }
+		 ,{ // meta tag 제거 정규식
+			   "pattern" : "\<meta.*\>" 
+			  , "replaceStr" : ""
+		  }
+
+		  ,{ // inline style 속성 제거 정규식
+			   "pattern" : "style\\=\"[^\"]*\\s*;\\s*\"" 
+			  , "replaceStr" : ""
+		  }
+		  ,{ // inline style 속성 제거 정규식
+			   "pattern" : "style\\s*=\\s*\"[^\"]*\"" 
+			  , "replaceStr" : ""
+		  }
+		  
+		  
+
+
+		  ,{ // width속성 제거 정규식
+			   "pattern" : "\\s+width\\s*=\\s*\"[^\"]*\"" 
+			  , "replaceStr" : ""
+		  }
+		  ,{ // height 속성 제거 정규식
+			  "pattern" : "\\s+height=\\s*\"[^\"]*\""
+			  , "replaceStr" : ""
+		  }
+		  ,{ // align 속성 제거 정규식
+			   "pattern" : "\\s+align\\s*\=\\s*\"[^\"]*\"" 
+			  , "replaceStr" : ""
+		  }
+		  ,{ // cellpadding 속성 제거 정규식
+			  "pattern": "\\s+cellpadding\\s*=\\s*\"[^\"]*\""
+			  , "replaceStr" : ""
+		  }
+		  ,{ // cellspacing 속성 제거 정규식
+			  "pattern": "\\s+cellspacing\\s*=\\s*\"[^\"]*\""
+			  , "replaceStr" : ""
+		  }
+		  ,{ // 클래스 속성 제거 정규식
+			   "pattern" : "(\\s+class\\s*=\\s*\"padL5\"\\s+|\\s+class\\s*=\\s*\"input01\"\\s+)" 
+			  , "replaceStr" : ""
+		  }
+//		  ,{
+//			   "pattern" : "(bordercolordark\=\"[^\"]*\"|bgcolor\=\"[^\"]*\"|border\=\"[^\"]*\"|bordercolor\=\"[^\"]*\")" 
+//			  , "replaceStr" : ""
+//		  }
+		//   ,{
+		// 	   "pattern" : "\\s*<\\s*tr" 
+		// 	  , "replaceStr" : "\n\t\t<tr class=\"aprvl-table-row\" "
+		//   }
+		//   ,{
+		// 	   "pattern" : "\\s*<\\s*td" 
+		// 	  , "replaceStr" : "<td class=\"aprvl-table-data\" "
+		//   }
+		//   ,{
+		// 	   "pattern" : "\\s*<\\s*table" 
+		// 	  , "replaceStr" : "\n<table class=\"aprvl-table-basic\" "
+		//   }
+		//   ,{
+		// 	   "pattern" : "\\s*<\\s*TABLE" 
+		// 	  , "replaceStr" : "\n<table class=\"aprvl-table-basic\" "
+		//   }		  
+//		  ,{
+//			   "pattern" : "\\s*<\\s*table.*" 
+//			  , "replaceStr" : "<table class=\"aprvl-table-basic\" "
+//		  }
+		// table 관련 클래스 적용
+
+		  // tr 태그 처리
+		  ,{ // class 요소가 있을경우 tr 태그 바로뒤에 위치 시킨다.
+			 "pattern" : "<\\s*tr(.*)(class\\s*=\\s*\".*\")(.*)>" ,
+			 "replaceStr" : "<tr $2 $1 $3>"
+		 }
+         ,{ // tr 태그 뒤에 항상 to-be class가 오도록 한다.
+			"pattern" : "<\\s*tr(.*)>" ,
+			"replaceStr" : "<tr class=\"aprvl-table-row\" $1>"
+		 }
+		 ,{ // tr 태그의 중복되는 클래스 요소를 병합한다.
+			"pattern" : "<tr class=\"aprvl-table-row\"\\s*class\\s*=\\s*\"(.*)\"\\s*(.*)>" ,
+			"replaceStr" : "<tr class=\"aprvl-table-row $1\" $2>"
+		 }
+
+		 // td 태그 처리
+		 ,{ // class 요소가 있을경우 td 태그 바로뒤에 위치 시킨다.
+			"pattern" : "<\\s*td(.*)(class\\s*=\\s*\".*\")(.*)>" ,
+			 "replaceStr" : "<td $2 $1 $3>"
+		 }
+         ,{ // td 태그 뒤에 항상 to-be class가 오도록 한다.
+			"pattern" : "<\\s*td(.*)>" ,
+			"replaceStr" : "<td class=\"aprvl-table-data\" $1>"
+		 }
+		 ,{ // td 태그의 중복되는 클래스 요소를 병합한다.
+			"pattern" : "<td class=\"aprvl-table-data\"\\s*class\\s*=\\s*\"(.*)\"\\s*(.*)>" ,
+			"replaceStr" : "<td class=\"aprvl-table-data $1\" $2>"
+		 }
+
+		 // table 태그 처리
+		 ,{ // class 요소가 있을경우 table 태그 바로뒤에 위치 시킨다.
+			"pattern" : "<\\s*table(.*)(class\\s*=\\s*\".*\")(.*)>" ,
+			 "replaceStr" : "<table $2 $1 $3>"
+		 }
+         ,{ // table 태그 뒤에 항상 to-be class가 오도록 한다.
+			"pattern" : "<\\s*table(.*)>" ,
+			"replaceStr" : "<table class=\"aprvl-table-basic\" $1>"
+		 }
+		 ,{ // table 태그의 중복되는 클래스 요소를 병합한다.
+			"pattern" : "<table class=\"aprvl-table-basic\"\\s*class\\s*=\\s*\"(.*)\"\\s*(.*)>" ,
+			"replaceStr" : "<table class=\"aprvl-table-basic $1\" $2>"
+		 }
+
+  
+
+		  ,{
+			   "pattern" : "\\<%=logo%\\>" 
+			  , "replaceStr" : "${form_logo}"
+		  }	
+		  ,{
+			   "pattern" : "\\<%=logo_qcells%\\>" 
+			  , "replaceStr" : "${form_logo_qcells}"
+		  }	
+		  ,{
+			   "pattern" : "\\<%=logo_qcells1%\\>" 
+			  , "replaceStr" : "${form_logo_qcells1}"
+		  }		
+
+
+		  ,{
+			  "pattern" : "</table>"
+			  , "replaceStr" : "</table>\n"
+		  }
+
+			// colgroup 추가
+		  ,{
+			  "pattern" : "\\s*<table\\s*class\\s*=\\s*\"aprvl-table-basic\"(.*)>\\s*"
+			  , "replaceStr" : "<table class=\"aprvl-table-basic\" $1>\n\t<colgroup>\n\t\t<col width=\"150px\">\n\t\t<col width=\"\">\n\t</colgroup>\n"
+		  }
+
+		  ,{
+			  "pattern" : "\\s*border=\"\\S+\"\\s*"
+			  , "replaceStr" : ""
+		  }
+		  ,{
+			  "pattern" : "\\s*bordercolor=\"#95B4CF\"\\s*"
+			  , "replaceStr" : ""
+		  }
+		  ,{
+			  "pattern" : "\\s*bordercolordark=\"white\"\\s*"
+			  , "replaceStr" : ""
+		  }
+	   
+
+		  ,{
+			   "pattern" : "\\<%=logo%\\>" 
+			  , "replaceStr" : "${form_logo_qcells}"
+		  }	
+		  ,{ // 달력 치환
+			   "pattern" : "src\\s*=\\s*\".*/input_calendar.*gif\"" 
+			  , "replaceStr" : "src=\"/neo/js/ewt/ext/formEditor/images/input_calendar.gif\""
+		  }
+		  ,{ // 달력 치환
+			   "pattern" : "src\\s*=\\s*\".*/input_calendar\\.gif\"" 
+			  , "replaceStr" : "src=\"/neo/js/ewt/ext/formEditor/images/input_calendar.gif\""
+		  }
+		  ,{ // 사원찾기 치환
+			   "pattern" : "src\\s*=\\s*\".*/user_obj\\.gif\"" 
+			  , "replaceStr" : "src=\"/neo/js/ewt/ext/formEditor/images/user_obj.gif\""
+		  }	
+		  ,{ // 사원찾기 치환
+			   "pattern" : "src\\s*=\\s*\".*/user_obj.*gif\"" 
+			  , "replaceStr" : "src=\"/neo/js/ewt/ext/formEditor/images/user_obj.gif\""
+		  }	
+		  ,{ // 부서찾기 치환
+			   "pattern" : "src\\s*=\\s*\".*/group_obj.*gif\"" 
+			  , "replaceStr" : "src=\"/neo/js/ewt/ext/formEditor/images/group_obj.gif\""
+		  }	
+		  ,{ // 부서찾기 치환
+			   "pattern" : "src\\s*=\\s*\".*/group_obj\\.gif\"" 
+			  , "replaceStr" : "src=\"/neo/js/ewt/ext/formEditor/images/group_obj.gif\""
+		  }	
+		  ,{ // 사원 + 부서 찾기 치환
+			   "pattern" : "src\\s*=\\s*\".*/udt.*gif\"" 
+			  , "replaceStr" : "src=\"/neo/js/ewt/ext/formEditor/images/udt.gif\""
+		  }	
+		  ,{ // 사원 + 부서 찾기 치환
+			   "pattern" : "src\\s*=\\s*\".*/udt\\.gif\"" 
+			  , "replaceStr" : "src=\"/neo/js/ewt/ext/formEditor/images/udt.gif\""
+		  }	
+		  ,{ // 관련 문서 치환
+			   "pattern" : "src\\s*=\\s*\".*/i-file-none.*gif\"" 
+			  , "replaceStr" : "src=\"/neo/js/ewt/ext/formEditor/images/i-file-none.gif\""
+		  }		
+		  ,{ // 관련 문서 치환
+			   "pattern" : "src\\s*=\\s*\".*/i-file-none\\.gif\"" 
+			  , "replaceStr" : "src=\"/neo/js/ewt/ext/formEditor/images/i-file-none.gif\""
+		  }		
+		  ,{ // 편집기 치환
+			   "pattern" : "src\\s*=\\s*\".*/input_html\\.gif\"" 
+			  , "replaceStr" : "src=\"/neo/js/ewt/ext/formEditor/images/input_html.gif\"" 
+		  }		
+		  ,{ // 편집기 치환
+			   "pattern" : "src\\s*=\\s*\".*/input_html\\.gif\"" 
+			  , "replaceStr" : "src=\"/neo/js/ewt/ext/formEditor/images/input_html.gif\"" 
+		  }		
+		  ,{ // 조직도 팝업 치환
+			   "pattern" : "src\\s*=\\s*\".*/btn_group.*gif\"" 
+			  , "replaceStr" : "src=\"/neo/img/neo/theme/btn/btn_group.gif\""
+		  }		
+		  ,{ // 조직도 팝업 치환
+			   "pattern" : "src\\s*=\\s*\".*/btn_group\.gif\"" 
+			  , "replaceStr" : "src=\"/neo/img/neo/theme/btn/btn_group.gif\""
+		  }
+		  ,{ // th class 적용 치환
+			   "pattern" : "\\<td\\s*(class=\"aprvl-table-data\")(.*)bgcolor=\"\\S+\"(.*)" 
+			  , "replaceStr" : "<td class=\"aprvl-table-head\" $2 $3"
+		  }
+		  ,{
+			   "pattern" : "write\\s+&&"
+			  , "replaceStr" : "write and"
+		  }
+		  ,{
+			   "pattern" : "(\")\\s+(\\S+)"
+			  , "replaceStr" : "$1 $2"
+		  }
+		  ,{
+			   "pattern" : "\"\\s+\>" 
+			  , "replaceStr" : "\">"
+		  }
+		  ,{
+			   "pattern" : "\\s+\>" 
+			  , "replaceStr" : ">"
+		  }
+	];
+	// regex pattern matcher
+	function regexReplace(originTxt){
+		let replacedText = originTxt;
+		let pSize = regexPattern.length;
+
+		for( let i = 0 ; i <pSize ; i++){
+			let regexP = new RegExp(regexPattern[i].pattern, 'g');
+			replacedText = replacedText.replace(regexP, regexPattern[i].replaceStr);
+		}
+
+		return replacedText;
+	};
+
+	$(document).ready(function(){
+
+		var convertFunc = function(){
+			// let origin_txt = $('#originTxt').val();
+			let origin_txt = originEditor.getValue();
+
+			// $('#targetTxt').val('');
+			targetEditor.setValue('');
+
+			// replaced target regex
+			let target_txt = regexReplace(origin_txt);
+
+			targetEditor.setValue(target_txt);
+		}
+
+		// click event binding
+	    $('#convertBtn').on('click', function(){
+
+			convertFunc();
+		});
+
+		// enter key event binding
+		$('#originTxt').keydown(function(key){
+			if(key.keyCode == 13 && key.shiftKey){
+				convertFunc();
+			}
+		});
+
+		$('#downloadBtn').on('click', function(){
+
+			var fileName = $("#targetFileNameInput").val();
+
+			var convertedText = targetEditor.getValue();
+
+			var downTxt = convertedText.trim();
+			if(downTxt){
+				if(fileName != '' && fileName != null)
+				download(convertedText, fileName, "text/plain");
+			}
+
+		});
+		
+	});
+  </script>
+
+</body>
+
+</html>
