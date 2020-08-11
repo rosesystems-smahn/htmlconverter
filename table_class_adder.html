@@ -234,39 +234,68 @@ function dragOverHandler(ev) {
 			  "pattern": "\\s+cellspacing\\s*=\\s*\"[^\"]*\""
 			  , "replaceStr" : ""
 		  }
-		  ,{
-			   "pattern" : "(\\s+class\\s*=\\s*\"padL5\"\\s+|\\s+class\\s*=\\s*\"input01\"\\s+)" 
-			  , "replaceStr" : ""
-		  }
-//		  ,{
-//			   "pattern" : "(bordercolordark\=\"[^\"]*\"|bgcolor\=\"[^\"]*\"|border\=\"[^\"]*\"|bordercolor\=\"[^\"]*\")" 
-//			  , "replaceStr" : ""
-//		  }
-		  ,{
-			   "pattern" : "\\s*<\\s*tr" 
-			  , "replaceStr" : "<tr class=\"aprvl-table-row\" "
-		  }
-		  ,{
-			   "pattern" : "\\s*<\\s*td" 
-			  , "replaceStr" : "<td class=\"aprvl-table-data\" "
-		  }		  
-		  ,{
-			   "pattern" : "\\s*<\\s*table" 
-			  , "replaceStr" : "<table class=\"aprvl-table-basic\" "
-		  }
-		  ,{
-			   "pattern" : "\\s*<\\s*TABLE" 
-			  , "replaceStr" : "<table class=\"aprvl-table-basic\" "
-		  }		  
-//		  ,{
-//			   "pattern" : "\\s*<\\s*table.*" 
-//			  , "replaceStr" : "<table class=\"aprvl-table-basic\" "
-//		  }		  		  
+
+		// table 관련 클래스 적용
+
+		  // tr 태그 처리
+		 ,{ // class 요소가 있을경우 tr 태그 바로뒤에 위치 시킨다.
+			 "pattern" : "<\\s*tr(.*)(class\\s*=\\s*\".*\")(.*)>" ,
+			 "replaceStr" : "<tr $2 $1 $3>"
+		 }
+         ,{ // tr 태그 뒤에 항상 to-be class가 오도록 한다.
+			"pattern" : "<\\s*tr(.*)>" ,
+			"replaceStr" : "<tr class=\"aprvl-table-row\" $1>"
+		 }
+		 ,{ // tr 태그의 중복되는 클래스 요소를 병합한다.
+			"pattern" : "<tr class=\"aprvl-table-row\"\\s*class\\s*=\\s*\"(.*)\"\\s*(.*)>" ,
+			"replaceStr" : "<tr class=\"aprvl-table-row $1\" $2>"
+		 }
+
+		 // td 태그 처리
+		 ,{ // class 요소가 있을경우 td 태그 바로뒤에 위치 시킨다.
+			"pattern" : "<\\s*td(.*)(class\\s*=\\s*\".*\")(.*)>" ,
+			 "replaceStr" : "<td $2 $1 $3>"
+		 }
+         ,{ // td 태그 뒤에 항상 to-be class가 오도록 한다.
+			"pattern" : "<\\s*td(.*)>" ,
+			"replaceStr" : "<td class=\"aprvl-table-data\" $1>"
+		 }
+		 ,{ // td 태그의 중복되는 클래스 요소를 병합한다.
+			"pattern" : "<td class=\"aprvl-table-data\"\\s*class\\s*=\\s*\"(.*)\"\\s*(.*)>" ,
+			"replaceStr" : "<td class=\"aprvl-table-data $1\" $2>"
+		 }
+
+		 // table 태그 처리
+		 ,{ // class 요소가 있을경우 table 태그 바로뒤에 위치 시킨다.
+			"pattern" : "<\\s*table(.*)(class\\s*=\\s*\".*\")(.*)>" ,
+			 "replaceStr" : "<table $2 $1 $3>"
+		 }
+         ,{ // table 태그 뒤에 항상 to-be class가 오도록 한다.
+			"pattern" : "<\\s*table(.*)>" ,
+			"replaceStr" : "<table class=\"aprvl-table-basic\" $1>"
+		 }
+		 ,{ // table 태그의 중복되는 클래스 요소를 병합한다.
+			"pattern" : "<table class=\"aprvl-table-basic\"\\s*class\\s*=\\s*\"(.*)\"\\s*(.*)>" ,
+			"replaceStr" : "<table class=\"aprvl-table-basic $1\" $2>"
+		 }
+
+  
 
 		  ,{
 			   "pattern" : "\\<%=logo%\\>" 
+			  , "replaceStr" : "${form_logo}"
+		  }	
+		  ,{
+			   "pattern" : "\\<%=logo_qcells%\\>" 
 			  , "replaceStr" : "${form_logo_qcells}"
 		  }	
+		  ,{
+			   "pattern" : "\\<%=logo_qcells1%\\>" 
+			  , "replaceStr" : "${form_logo_qcells1}"
+		  }		
+
+
+
 		  ,{ // 달력 치환
 			   "pattern" : "src\\s*=\\s*\".*/input_calendar.*gif\"" 
 			  , "replaceStr" : "src=\"/neo/js/ewt/ext/formEditor/images/input_calendar.gif\""
@@ -325,8 +354,10 @@ function dragOverHandler(ev) {
 		  }
 		  ,{ // th class 적용 치환
 			   "pattern" : "\\<td\\s*(class=\"aprvl-table-data\")(.*)bgcolor=\"\\S+\"(.*)" 
-			  , "replaceStr" : "<td class=\"aprvl-table-head\" $2 $3"
+			  , "replaceStr" : "<th class=\"aprvl-table-head\" $2 $3"
 		  }
+
+
 		  ,{
 			   "pattern" : "write\\s+&&"
 			  , "replaceStr" : "write and"
